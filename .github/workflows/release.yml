@@ -1,0 +1,57 @@
+# Builds the Windows and Mac apps and publishes them as a release.
+# Starts when a version tag (for example v0.1.1) is pushed to this repo.
+name: Release
+
+on:
+  push:
+    tags: ["v*"]
+
+permissions:
+  contents: write
+
+env:
+  GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  TAG: ${{ github.ref_name }}
+
+jobs:
+  draft:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Start a hidden release
+        run: gh release create "$TAG" --repo "$GITHUB_REPOSITORY" --title "Work Dashboard $TAG" --notes "Work Dashboard desktop app, $TAG." --draft
+
+  build:
+    needs: draft
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [windows-latest, macos-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: npm ci
+      - name: Check the tag matches the app version
+        shell: bash
+        run: |
+          version="v$(node -p "require('./package.json').version")"
+          if [ "$version" != "$TAG" ]; then echo "Tag $TAG does not match package.json $version"; exit 1; fi
+      - name: Build
+        run: npx electron-builder --publish never
+        env:
+          CSC_IDENTITY_AUTO_DISCOVERY: "false"
+      - name: Upload to the release
+        shell: bash
+        run: |
+          shopt -s nullglob
+          files=(dist/*.exe dist/*.dmg dist/*.zip dist/*.blockmap dist/latest*.yml)
+          gh release upload "$TAG" "${files[@]}" --repo "$GITHUB_REPOSITORY" --clobber
+
+  publish:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Make the release visible
+        run: gh release edit "$TAG" --repo "$GITHUB_REPOSITORY" --draft=false --latest
