@@ -1,7 +1,7 @@
 {
   "name": "work-dashboard-desktop",
   "productName": "Work Dashboard",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Desktop window for the Work Dashboard.",
   "author": "The Creator Factory",
   "main": "main.js",
