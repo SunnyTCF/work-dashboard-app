@@ -1,0 +1,26 @@
+{
+  "name": "work-dashboard-desktop",
+  "productName": "Work Dashboard",
+  "version": "0.1.0",
+  "description": "Desktop window for the Work Dashboard.",
+  "main": "main.js",
+  "private": true,
+  "scripts": {
+    "start": "electron .",
+    "dist:win": "electron-builder --win nsis",
+    "dist:mac": "electron-builder --mac dmg"
+  },
+  "dependencies": {
+    "electron-updater": "^6.3.9"
+  },
+  "devDependencies": {
+    "electron": "^37.2.0",
+    "electron-builder": "^25.1.8"
+  },
+  "build": {
+    "appId": "com.creatorfactory.workdashboard",
+    "files": ["main.js", "config.json"],
+    "publish": [{ "provider": "github", "owner": "SunnyTCF", "repo": "work-dashboard" }],
+    "mac": { "category": "public.app-category.productivity" }
+  }
+}
