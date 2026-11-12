@@ -10,7 +10,7 @@ const HOME = process.env.DASHBOARD_URL || url;
 const homeOrigin = new URL(HOME).origin;
 
 // Links that open other apps on this computer.
-const APP_LINKS = ["voyager:", "grokbot:"];
+const APP_LINKS = ["voyager:", "grokbot:", "slack:", "discord:"];
 // Sign-in happens on GitHub, inside the window.
 const SIGN_IN = ["https://github.com"];
 
